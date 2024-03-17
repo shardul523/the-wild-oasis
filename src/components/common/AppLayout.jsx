@@ -1,10 +1,7 @@
 import { Outlet } from "react-router-dom";
-import {
-  AppShell,
-  AppShellHeader,
-  AppShellNavbar,
-  AppShellMain,
-} from "@mantine/core";
+import { AppShell } from "@mantine/core";
+import Logo from "./Logo";
+import NavList from "./NavList";
 
 function AppLayout() {
   return (
@@ -12,13 +9,16 @@ function AppLayout() {
       layout={"alt"}
       padding={"md"}
       header={{ height: 60 }}
-      navbar={{ width: 300, breakpoint: "sm" }}
+      navbar={{ width: 250, breakpoint: "sm" }}
     >
-      <AppShellHeader>Header</AppShellHeader>
-      <AppShellNavbar>Navbar</AppShellNavbar>
-      <AppShellMain>
+      <AppShell.Header>Header</AppShell.Header>
+      <AppShell.Navbar>
+        <Logo />
+        <NavList />
+      </AppShell.Navbar>
+      <AppShell.Main bg={"gray.0"}>
         <Outlet />
-      </AppShellMain>
+      </AppShell.Main>
     </AppShell>
   );
 }
