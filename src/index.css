@@ -10,3 +10,22 @@ a {
 .full-width {
     width: 100%;
 }
+
+
+.mantine-TextInput-input {
+    &:focus-within {
+        border-color: rgb(104, 40, 231); /* Desired border color change */
+    }
+}
+
+.mantine-NumberInput-input {
+    &:focus-within {
+        border-color: rgb(104, 40, 231); /* Desired border color change */
+    }
+}
+
+.mantine-Textarea-input {
+    &:focus-within {
+        border-color: rgb(104, 40, 231); /* Desired border color change */
+    }
+}

@@ -20,3 +20,15 @@ export async function deleteCabin(id) {
     throw new Error("Cabin could not be deleted!");
   }
 }
+
+export async function createNewCabin(newCabin) {
+  try {
+    await axios.post(`${URL}/${BASE}/cabins`, {
+      ...newCabin,
+      name: newCabin.cabinName,
+    });
+  } catch (err) {
+    console.error(err);
+    throw new Error("Cabin could not be created");
+  }
+}

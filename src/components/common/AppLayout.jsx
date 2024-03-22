@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { AppShell, Container } from "@mantine/core";
+import { AppShell, Flex } from "@mantine/core";
 import Logo from "./Logo";
 import NavList from "./NavList";
 
@@ -17,9 +17,9 @@ function AppLayout() {
         <NavList />
       </AppShell.Navbar>
       <AppShell.Main bg={"gray.0"}>
-        <Container size={"lg"}>
+        <Flex direction={"column"} gap={20} align={"flex-start"}>
           <Outlet />
-        </Container>
+        </Flex>
       </AppShell.Main>
     </AppShell>
   );

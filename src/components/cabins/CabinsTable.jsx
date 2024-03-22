@@ -34,10 +34,12 @@ function CabinsTable() {
       </Center>
     );
 
+  if (status === "error") return <div>There was an error.</div>;
+
   return (
-    <Table.ScrollContainer>
+    <Table.ScrollContainer w={"100%"}>
       <Table withTableBorder horizontalSpacing={"lg"}>
-        <Table.Thead style={{ textTransform: "uppercase" }}>
+        <Table.Thead style={{ textTransform: "uppercase" }} bg={"gray.3"}>
           <Table.Tr>
             <Table.Th></Table.Th>
             <Table.Th>Cabin</Table.Th>
@@ -47,7 +49,7 @@ function CabinsTable() {
             <Table.Th></Table.Th>
           </Table.Tr>
         </Table.Thead>
-        <Table.Tbody bg={"white"}>
+        <Table.Tbody bg={"white"} style={{ paddingLeft: 5 }}>
           {cabins.map((cabin) => (
             <Table.Tr key={cabin._id}>
               <Table.Td>
