@@ -5,21 +5,27 @@ import {
   Flex,
   Textarea,
   Group,
+  FileInput,
+  Box,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import PrimaryButton from "../common/PrimaryButton";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createNewCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
 
-const formConfig = {
+import PrimaryButton from "../common/PrimaryButton";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createNewCabin, updateCabin } from "../../services/apiCabins";
+import styles from "./CabinForm.module.css";
+
+const formConfig = (cabin) => ({
   initialValues: {
-    cabinName: "",
-    maxCapacity: 0,
-    regularPrice: 0,
-    discount: 0,
-    description: "",
+    cabinName: cabin.name || "",
+    maxCapacity: cabin.maxCapacity || 0,
+    regularPrice: cabin.regularPrice || 0,
+    discount: cabin.discount || 0,
+    description: cabin.description || "",
+    cabinImage: null,
   },
   validate: {
     cabinName: (value) =>
@@ -34,21 +40,27 @@ const formConfig = {
         ? null
         : "Discount cannot be greater than regular price",
   },
-};
+});
 
-function CabinForm() {
+function CabinForm({ cabinToEdit = {} }) {
+  const formType = !cabinToEdit._id ? "add" : "edit";
   const [opened, { open, close }] = useDisclosure(false);
-  const form = useForm(formConfig);
+  const form = useForm(formConfig(cabinToEdit));
 
   const queryClient = useQueryClient();
 
-  const { mutate, isPending: isCreating } = useMutation({
-    mutationFn: createNewCabin,
+  const { mutate, isPending } = useMutation({
+    mutationFn: (data) => {
+      if (formType === "edit") return updateCabin(cabinToEdit._id, data);
+      return createNewCabin(data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cabins"] });
       form.reset();
       close();
-      toast.success("Cabin created successfully");
+      toast.success(
+        `Cabin ${formType === "edit" ? "edited" : "added"} successfully`
+      );
     },
     onError: (err) => {
       console.error(err.message);
@@ -73,33 +85,46 @@ function CabinForm() {
         >
           <TextInput
             label={"Cabin Name"}
+            classNames={{
+              input: styles.input,
+            }}
             {...form.getInputProps("cabinName")}
           />
           <NumberInput
             label={"Max Capacity"}
             allowNegative={false}
+            classNames={{ input: styles.input }}
             {...form.getInputProps("maxCapacity")}
           />
           <NumberInput
             label={"Regular Price"}
             allowNegative={false}
             prefix="$"
+            classNames={{ input: [styles.input] }}
             {...form.getInputProps("regularPrice")}
           />
           <NumberInput
             label={"Discount"}
             allowNegative={false}
             prefix="$"
+            classNames={{ input: styles.input }}
             {...form.getInputProps("discount")}
           />
           <Textarea
             label={"Description"}
             minRows={2}
+            classNames={{ input: styles.input }}
             {...form.getInputProps("description")}
           />
+          <FileInput
+            label={"Cabin Image"}
+            placeholder={"Upload Cabin Image"}
+            classNames={{ input: styles.input }}
+            {...form.getInputProps("cabinImage")}
+          />
           <Group justify="flex-end">
-            <PrimaryButton type="submit" disabled={isCreating}>
-              Add
+            <PrimaryButton type="submit" loading={isPending}>
+              {formType === "edit" ? "Edit" : "Add"}
             </PrimaryButton>
             <PrimaryButton type="reset" variant={"outline"} onClick={close}>
               Cancel
@@ -107,7 +132,11 @@ function CabinForm() {
           </Group>
         </Flex>
       </Modal>
-      <PrimaryButton onClick={open}>Add Cabin</PrimaryButton>
+      <Box>
+        <PrimaryButton onClick={open}>
+          {formType === "edit" ? "Edit" : "Add New Cabin"}
+        </PrimaryButton>
+      </Box>
     </>
   );
 }

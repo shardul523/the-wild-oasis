@@ -17,7 +17,7 @@ function AppLayout() {
         <NavList />
       </AppShell.Navbar>
       <AppShell.Main bg={"gray.0"}>
-        <Flex direction={"column"} gap={20} align={"flex-start"}>
+        <Flex direction={"column"} gap={20}>
           <Outlet />
         </Flex>
       </AppShell.Main>

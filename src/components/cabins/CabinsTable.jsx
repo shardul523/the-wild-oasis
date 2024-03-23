@@ -1,21 +1,13 @@
-import {
-  Button,
-  Center,
-  Loader,
-  Table,
-  NumberFormatter,
-  Image,
-} from "@mantine/core";
+import { Table, NumberFormatter, Image, Group } from "@mantine/core";
 import { toast } from "react-hot-toast";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAllCabins, deleteCabin } from "../../services/apiCabins";
 
-function CabinsTable() {
-  const { status, data: cabins } = useQuery({
-    queryKey: ["cabins"],
-    queryFn: getAllCabins,
-  });
+import PrimaryButton from "../common/PrimaryButton";
+import CabinForm from "./CabinForm";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteCabin } from "../../services/apiCabins";
+
+function CabinsTable({ cabins }) {
   const queryClient = useQueryClient();
 
   const { isLoading, mutate } = useMutation({
@@ -26,15 +18,6 @@ function CabinsTable() {
     },
     onError: () => toast.error("Cabin could not be deleted"),
   });
-
-  if (status === "pending")
-    return (
-      <Center mih={"50vh"}>
-        <Loader size={50} color="violet" />
-      </Center>
-    );
-
-  if (status === "error") return <div>There was an error.</div>;
 
   return (
     <Table.ScrollContainer w={"100%"}>
@@ -53,7 +36,7 @@ function CabinsTable() {
           {cabins.map((cabin) => (
             <Table.Tr key={cabin._id}>
               <Table.Td>
-                <Image src={cabin.image} alt="cabin-cover" w={75} />
+                <Image src={cabin.image} alt="cabin-cover" w={50} h={50} />
               </Table.Td>
               <Table.Td>{cabin.name}</Table.Td>
               <Table.Td>Fits a max of {cabin.maxCapacity} people</Table.Td>
@@ -63,6 +46,7 @@ function CabinsTable() {
                   prefix="$"
                   value={cabin.regularPrice}
                   decimalScale={2}
+                  style={{ color: "green", fontWeight: "bold" }}
                 />
               </Table.Td>
               <Table.Td>
@@ -72,19 +56,22 @@ function CabinsTable() {
                     decimalScale={2}
                     thousandSeparator
                     prefix="$"
+                    style={{ color: "red", fontWeight: "bold" }}
                   />
                 ) : (
                   "-"
                 )}
               </Table.Td>
               <Table.Td>
-                <Button
-                  color="violet"
-                  disabled={isLoading}
-                  onClick={() => mutate(cabin._id)}
-                >
-                  Delete
-                </Button>
+                <Group>
+                  <PrimaryButton
+                    disabled={isLoading}
+                    onClick={() => mutate(cabin._id)}
+                  >
+                    Delete
+                  </PrimaryButton>
+                  <CabinForm formType={"edit"} cabinToEdit={cabin} />
+                </Group>
               </Table.Td>
             </Table.Tr>
           ))}
